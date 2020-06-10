@@ -4,7 +4,7 @@ on a lineprinter at 125 characters per line. Every card should be
 followed by an extra space, and the last line should be completed with
 spaces if necessary.
 
-Note that this is just copy pasting functions from assemble and disassemble.
+Note that this is mostly just copy pasting functions from assemble and disassemble.
 */
 
 package main
@@ -35,6 +35,7 @@ func drawCards(cards chan<- string) {
 		}
 		cards <- string(card)
 	}
+	close(cards)
 }
 
 func addSpaceAfterCard(cards <-chan string, output chan<- rune) {
@@ -44,6 +45,7 @@ func addSpaceAfterCard(cards <-chan string, output chan<- rune) {
 		}
 		output <- ' '
 	}
+	close(output)
 }
 
 func processChars(chars <-chan rune, output chan<- []rune) {
