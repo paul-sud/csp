@@ -37,7 +37,7 @@ func east(chars <-chan rune) {
 func copy(input <-chan rune, output chan<- rune) {
 	for char := range input {
 		if char == '*' {
-			next, ok := <- input
+			next, ok := <-input
 			if !ok {
 				output <- char
 			} else if next == '*' {
