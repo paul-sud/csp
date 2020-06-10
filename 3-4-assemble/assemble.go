@@ -8,49 +8,53 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"strconv"
 	"time"
 )
 
-func generateRandomChars(chars chan<- string) {
+func generateRandomChars(chars chan<- rune) {
 	rand.Seed(42)
-	for i := 0; i < 255; i++ {
-		randString := strconv.Itoa(rand.Intn(127))
+	for i := 0; i < 256; i++ {
+		randString := rune(33 + rand.Intn(93))
 		chars <- randString
 	}
 	close(chars)
 }
 
-func processChars(chars <-chan string, output chan<- []string) {
+func processChars(chars <-chan rune, output chan<- []rune) {
 	i := 0
-	var b [125]string
+	var b [125]rune
 	for j := range b {
-		b[j] = " "
+		b[j] = ' '
 	}
 	for char := range chars {
-		fmt.Println(char)
 		b[i] = char
 		if i == 124 {
-			output <- b[:]
-			i = 0
+			// Need to send a new copy of the slice every time, otherwise we will be
+			// printing while the slice is being mutated, which leads to undefined
+			// behavior
+			tmp := make([]rune, 125)
+			copy(tmp, b[:])
+			output <- tmp
 			for j := range b {
-				b[j] = " "
+				b[j] = ' '
 			}
+			i = 0
+		} else {
+			i++
 		}
-		i++
 	}
 	output <- b[:]
 }
 
-func linePrinter(output <-chan []string) {
-	// for line := range output {
-	// 	fmt.Printf(string(line))
-	// }
+func linePrinter(output <-chan []rune) {
+	for line := range output {
+		fmt.Println(string(line))
+	}
 }
 
 func main() {
-	chars := make(chan string)
-	output := make(chan []string)
+	chars := make(chan rune)
+	output := make(chan []rune)
 	go generateRandomChars(chars)
 	go processChars(chars, output)
 	go linePrinter(output)
