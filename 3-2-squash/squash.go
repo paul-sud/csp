@@ -25,22 +25,17 @@ func east(chars <-chan rune) {
 }
 
 func copy(input <-chan rune, output chan<- rune) {
-	prevWasAsterisk := false
 	for char := range input {
 		if char == '*' {
-			if prevWasAsterisk {
+			next := <- input
+			if next == '*' {
 				output <- '↑'
-				prevWasAsterisk = false
 			} else {
-				prevWasAsterisk = true
-				continue
+				output <- char
+				output <- next
 			}
 		} else {
-			if prevWasAsterisk {
-				output <- '*'
-			}
 			output <- char
-			prevWasAsterisk = false
 		}
 	}
 }
