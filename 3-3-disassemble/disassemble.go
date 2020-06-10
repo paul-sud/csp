@@ -7,13 +7,27 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
+func main() {
+	cards := make(chan string)
+	output := make(chan rune)
+	go drawCards(cards)
+	go processCard(cards, output)
+	go printStream(output)
+	time.Sleep(100 * time.Millisecond)
+}
+
 func drawCards(cards chan<- string) {
-	data := []string{"foo", "bar"}
-	for _, card := range data {
-		cards <- card
+	rand.Seed(42)
+	for i := 0; i < 2; i++ {
+		card := make([]rune, 80)
+		for i := range card {
+			card[i] = rune(33 + rand.Intn(93))
+		}
+		cards <- string(card)
 	}
 }
 
@@ -30,13 +44,4 @@ func printStream(output <-chan rune) {
 	for char := range output {
 		fmt.Println(string(char))
 	}
-}
-
-func main() {
-	cards := make(chan string)
-	output := make(chan rune)
-	go drawCards(cards)
-	go processCard(cards, output)
-	go printStream(output)
-	time.Sleep(100 * time.Millisecond)
 }

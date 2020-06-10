@@ -21,6 +21,15 @@ import (
 	"time"
 )
 
+func main() {
+	data := make(chan rune)
+	output := make(chan rune)
+	go west(data)
+	go east(output)
+	go copy(data, output)
+	time.Sleep(100 * time.Millisecond)
+}
+
 func west(chars chan<- rune) {
 	for _, char := range "he*l**lo***" {
 		chars <- char
@@ -50,13 +59,4 @@ func copy(input <-chan rune, output chan<- rune) {
 			output <- char
 		}
 	}
-}
-
-func main() {
-	data := make(chan rune)
-	output := make(chan rune)
-	go west(data)
-	go east(output)
-	go copy(data, output)
-	time.Sleep(100 * time.Millisecond)
 }

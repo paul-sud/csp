@@ -11,6 +11,15 @@ import (
 	"time"
 )
 
+func main() {
+	chars := make(chan rune)
+	output := make(chan []rune)
+	go generateRandomChars(chars)
+	go processChars(chars, output)
+	go linePrinter(output)
+	time.Sleep(100 * time.Millisecond)
+}
+
 func generateRandomChars(chars chan<- rune) {
 	rand.Seed(42)
 	for i := 0; i < 256; i++ {
@@ -50,13 +59,4 @@ func linePrinter(output <-chan []rune) {
 	for line := range output {
 		fmt.Println(string(line))
 	}
-}
-
-func main() {
-	chars := make(chan rune)
-	output := make(chan []rune)
-	go generateRandomChars(chars)
-	go processChars(chars, output)
-	go linePrinter(output)
-	time.Sleep(100 * time.Millisecond)
 }
