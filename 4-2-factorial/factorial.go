@@ -23,7 +23,7 @@ func main() {
 
 func factorial(result chan int, n int) {
 	switch n {
-	case 0, 1:
+	case 0:
 		result <- 1
 	default:
 		subResult := make(chan int)
