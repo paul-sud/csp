@@ -16,13 +16,15 @@ import (
 	"math/rand"
 )
 
+const numRoutines int = 10
+
 func main() {
 	rand.Seed(42)
 	var wg sync.WaitGroup
 	// We need to buffer the decrement channel to be able to handle loopback
 	increment := make(chan bool)
 	decrement := make(chan bool, 10)
-	for i := 0; i < 100; i++ {
+	for i := 0; i < numRoutines; i++ {
 		wg.Add(1)
 		go signal(increment, decrement)
 	}
@@ -33,23 +35,27 @@ func main() {
 func semaphore(increment <-chan bool, decrement chan bool, wg *sync.WaitGroup) {
 	var value uint8
 	value = 0
-	for {
+	messageCount := 0
+	for messageCount < numRoutines {
 		select {
 		case <-increment:
+			messageCount++
 			value++
 			fmt.Println("Recieved increment signal and successfully incremented")
 			wg.Done()
 		case <-decrement:
+			messageCount++
+			wg.Done()
 			if value > 0 {
 				value--
 				fmt.Println("Recieved decrement signal and successfully decremented")
-				wg.Done()
 			} else {
 				decrement <- true
 				fmt.Println("Recieved decrement signal but postponed decrement")
 			}
 		}
 	}
+	fmt.Println("Final value of semaphore was", value)
 }
 
 func signal(increment chan<- bool, decrement chan<- bool) {
