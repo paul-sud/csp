@@ -12,8 +12,8 @@ package main
 
 import (
 	"fmt"
-	"sync"
 	"math/rand"
+	"sync"
 )
 
 const numRoutines int = 10
