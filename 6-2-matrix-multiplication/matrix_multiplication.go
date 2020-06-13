@@ -16,6 +16,8 @@ south border nodes. The north border is a constant
 source of zeros and the east border is just a sink. No
 provision need be made for termination nor for changing
 the values of the array A.
+
+Notes: this computes transpose(IN) * A, not the usual matrix vector product A * IN!
 */
 package main
 
