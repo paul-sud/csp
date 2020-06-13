@@ -60,7 +60,7 @@ func main() {
 			go interiorNode(A[i][j], westEast[i][j], westEast[i][j+1], northSouth[i][j], northSouth[i+1][j])
 		}
 	}
-	time.Sleep(500 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 }
 
 func interiorNode(
